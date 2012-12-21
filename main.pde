@@ -16,6 +16,16 @@ var lastObstacleCreation = 0;
 // Default number of player lives
 var NUM_LIVES = 3;
 
+var obstacleGenerationProperties = {
+	timeToSpawn: 200,
+	ySpeedAddition_min: 0.1,
+	ySpeedAddition_max: 0.5,
+	numberSpawned: 5
+};
+
+var obstacleImage = loadImage("images/blueEnemy.png");
+var shipImage = loadImage("images/mainShip.png");
+
 // Player Object containing players attributs
 var player = {
 	lives: NUM_LIVES,
@@ -24,14 +34,8 @@ var player = {
 	score: 0,
 	lastFired: -Infinity,
 	lastShield: -Infinity,
-	lastCollision: -Infinity
-};
-
-var obstacleGenerationProperties = {
-	timeToSpawn: 200,
-	ySpeedAddition_min: 0.1,
-	ySpeedAddition_max: 0.5,
-	numberSpawned: 5
+	lastCollision: -Infinity,
+	image: shipImage
 };
 
 // The Setup loop prepares the stage for action!
@@ -46,7 +50,7 @@ void draw() {
 	fill(255,255,255);
 	if(GameIsRunning === true) {
 		DrawPlayer();
-		CreateBullets(mouseX + 25);
+		CreateBullets(mouseX + 11);
 		GenerateAllObstacles();
 		UpdateObstacles();
 		UpdateBullets();
@@ -92,14 +96,15 @@ var CreateObstacles = function() {
 	obstacle.y = 40;
 	obstacle.ySpeed = 0.1 + random(obstacleGenerationProperties.ySpeedAddition_min, obstacleGenerationProperties.ySpeedAddition_max);
 	obstacle.health = 1;
-
+	obstacle.image = obstacleImage;
 	return obstacle;
 };
 
 var UpdateObstacles = function() {
 	for(var i = 0; i < obstacles.length; i++) {
 		var obstacle = obstacles[i];
-		rect(obstacle.x, obstacle.y, 30, 30);
+		//rect(obstacle.x, obstacle.y, 30, 30);
+		image(obstacle.image, obstacle.x, obstacle.y);
 		obstacle.y += obstacle.ySpeed;
 
 		if(obstacle.health <= 0){
@@ -125,7 +130,7 @@ var DrawOpeningScreen = function() {
 	//Game Title
 	PFont largeFont = loadFont("calibri");
   	textFont(largeFont, 90);
-	text("Game Title", 200, 250);
+	text("Space Armageddon", 50, 250);
 
 	PFont smallFont = loadFont("courier");
   	textFont(smallFont, 14);
@@ -167,7 +172,8 @@ var UpdateBullets = function() {
 };
 
 var DrawPlayer = function() {
-	rect(mouseX, stageHeight - 50, 50, 10);
+	//rect(mouseX, stageHeight - 50, 50, 10);
+	image(player.image, mouseX, stageHeight - 50);
 };
 
 var DrawScore = function() {
