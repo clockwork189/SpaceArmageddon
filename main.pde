@@ -25,6 +25,10 @@ var obstacleGenerationProperties = {
 
 var obstacleImage = loadImage("images/blueEnemy.png");
 var shipImage = loadImage("images/mainShip.png");
+var titleImage = loadImage("images/TitleImage.png");
+var gameOverImage = loadImage("images/GameOver.png");
+var lifeIcon = loadImage("images/live.png");
+var backgroundImage = loadImage("images/background.png");
 
 // Player Object containing players attributs
 var player = {
@@ -49,6 +53,7 @@ void draw() {
 	background(0,0,0);
 	fill(255,255,255);
 	if(GameIsRunning === true) {
+		DrawBackground();
 		DrawPlayer();
 		CreateBullets(mouseX + 11);
 		GenerateAllObstacles();
@@ -128,13 +133,17 @@ var DrawOpeningScreen = function() {
 	fill(255,255,255);
 	
 	//Game Title
-	PFont largeFont = loadFont("calibri");
-  	textFont(largeFont, 90);
-	text("Space Armageddon", 50, 250);
+	image(titleImage, 100, 100);
+	
+	PFont mediumFont = loadFont("courier");
+  	textFont(mediumFont, 16);
+    text("Can you protect planet earth from the alien invaders?", 140, 230);
+    text("Move your ship with your mouse", 240, 300);
+    text("Click or press a key to shoot", 240, 325);
 
 	PFont smallFont = loadFont("courier");
   	textFont(smallFont, 14);
-    text("Click to start the game", 300, 320);
+    text("Click to begin your mission", 280, 400);
 };
 
 var CreateBullets = function(posX) {
@@ -178,8 +187,16 @@ var DrawPlayer = function() {
 
 var DrawScore = function() {
 	fill(255,255,255);
+	PFont mediumFont = loadFont("courier");
+	textFont(mediumFont, 16);
     text("Score: " + player.score, 550, 30);
-    text("Number of Lives: " + player.lives, 50, 30);
+    text("Number of Lives: ", 50, 30);
+    
+    var spacing = 30;
+    for(var i = player.lives; i > 0; i--) {
+    	image(lifeIcon, 190 + spacing, 13);
+    	spacing += 30;
+    }
 };
 
 var UpdateScore = function() {
@@ -216,23 +233,27 @@ var UpdateObstacleSpawnCharateristics = function() {
 		obstacleGenerationProperties.ySpeedAddition_max = 0.9;
 		obstacleGenerationProperties.numberSpawned = 9;
 	}  
-}
+};
 
 var DrawGameOverScreen = function() {
 	if(player.lives <= 0) {
 		
-		//Game Title
-		PFont largeFont = loadFont("calibri");
-	  	textFont(largeFont, 90);
-		text("Game Over", 200, 250);
+		image(gameOverImage, 240, 150);
 
 		PFont mediumFont = loadFont("calibri");
 	  	textFont(mediumFont, 28);
-	    text("Final Score: " + player.score, 330, 320);
+	    text("Final Score: " + player.score, 330, 280);
 
 		PFont smallFont = loadFont("courier");
 	  	textFont(smallFont, 14);
 	    text("Click to start a new game", 310, 380);
 
 	}
-}
+};
+
+var DrawBackground = function() {
+	//fill(0,0,0);
+    //image(backgroundImage, 800, 600);
+    background(backgroundImage)
+    //rect(0, 0, stageWidth, stageHeight);
+};
