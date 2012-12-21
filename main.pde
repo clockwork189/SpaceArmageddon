@@ -11,6 +11,7 @@ obstacles = [];
 // Setting the height and width of the canvas element
 var stageWidth = 800;
 var stageHeight = 600;
+
 var lastObstacleCreation = 0;
 
 // Default number of player lives
@@ -20,7 +21,8 @@ var obstacleGenerationProperties = {
 	timeToSpawn: 200,
 	ySpeedAddition_min: 0.1,
 	ySpeedAddition_max: 0.5,
-	numberSpawned: 5
+	numberSpawned_min: 3,
+	numberSpawned_max: 5
 };
 
 var obstacleImage = loadImage("images/blueEnemy.png");
@@ -87,8 +89,7 @@ var GenerateAllObstacles = function() {
         return;
     }
 
-
-	var numObstacles = random(obstacleGenerationProperties.numberSpawned);
+	var numObstacles = random(obstacleGenerationProperties.numberSpawned_min, obstacleGenerationProperties.numberSpawned_max);
 	for(var i = 0; i < numObstacles; i++) {
 		obstacles.push(CreateObstacles());
 	}
@@ -183,7 +184,6 @@ var UpdateBullets = function() {
 };
 
 var DrawPlayer = function() {
-	//rect(mouseX, stageHeight - 50, 50, 10);
 	image(player.image, mouseX, stageHeight - 50);
 };
 
@@ -216,24 +216,41 @@ var UpdateScore = function() {
 };
 
 var UpdateObstacleSpawnCharateristics = function() {
-	if(player.score > 50 && player.score < 100) {
+	if(player.score > 25 && player.score < 50) {
 		obstacleGenerationProperties.ySpeedAddition_min = 0.3;
 		obstacleGenerationProperties.ySpeedAddition_max = 0.6;
-		obstacleGenerationProperties.numberSpawned = 6;
-	} else if(player.score > 100 && player.score < 150) {
+		obstacleGenerationProperties.numberSpawned_min = 5;
+		obstacleGenerationProperties.numberSpawned_max = 6;
+	} else if(player.score > 50 && player.score < 75) {
 		obstacleGenerationProperties.ySpeedAddition_min = 0.3;
 		obstacleGenerationProperties.ySpeedAddition_max = 0.7;
-		obstacleGenerationProperties.numberSpawned = 7;
-	} else if(player.score > 150 && player.score < 200) {
-		//obstacleGenerationProperties.timeToSpawn = 250;
+		obstacleGenerationProperties.numberSpawned_min = 5;
+		obstacleGenerationProperties.numberSpawned_max = 7;
+	} else if(player.score > 75 && player.score < 100) {
 		obstacleGenerationProperties.ySpeedAddition_min = 0.4;
 		obstacleGenerationProperties.ySpeedAddition_max = 0.8;
-		obstacleGenerationProperties.numberSpawned = 8;
-	} else if(player.score > 200) {
-		//obstacleGenerationProperties.timeToSpawn = 200;
+		obstacleGenerationProperties.numberSpawned_min = 5;
+		obstacleGenerationProperties.numberSpawned_max = 8;
+	} else if(player.score > 100 && player.score < 125) {
 		obstacleGenerationProperties.ySpeedAddition_min = 0.5;
 		obstacleGenerationProperties.ySpeedAddition_max = 0.9;
-		obstacleGenerationProperties.numberSpawned = 9;
+		obstacleGenerationProperties.numberSpawned_min = 7;
+		obstacleGenerationProperties.numberSpawned_max = 9;
+	}   else if(player.score > 125 && player.score < 150) {
+		obstacleGenerationProperties.ySpeedAddition_min = 0.8;
+		obstacleGenerationProperties.ySpeedAddition_max = 1.0;
+		obstacleGenerationProperties.numberSpawned_min = 8;
+		obstacleGenerationProperties.numberSpawned_max = 10;
+	} else if(player.score > 150 && player.score < 175) {
+		obstacleGenerationProperties.ySpeedAddition_min = 0.9;
+		obstacleGenerationProperties.ySpeedAddition_max = 1.5;
+		obstacleGenerationProperties.numberSpawned_min = 9;
+		obstacleGenerationProperties.numberSpawned_max = 12;
+	} else if(player.score > 200) {
+		obstacleGenerationProperties.ySpeedAddition_min = 1.0;
+		obstacleGenerationProperties.ySpeedAddition_max = 1.5;
+		obstacleGenerationProperties.numberSpawned_min = 12;
+		obstacleGenerationProperties.numberSpawned_max = 15;
 	}  
 };
 
