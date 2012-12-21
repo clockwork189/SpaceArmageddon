@@ -137,13 +137,15 @@ var DrawOpeningScreen = function() {
 	
 	PFont mediumFont = loadFont("courier");
   	textFont(mediumFont, 16);
-    text("Can you protect planet earth from the alien invaders?", 140, 230);
-    text("Move your ship with your mouse", 240, 300);
-    text("Click or press a key to shoot", 240, 325);
+    text("OH NOESSS! Our planet is under attack!", 200, 220);
+    text("Can you protect planet earth from the alien invaders?", 140, 250);
+    text("Move your ship with your mouse", 240, 350);
+    text("Click or press a key to shoot", 240, 375);
 
 	PFont smallFont = loadFont("courier");
   	textFont(smallFont, 14);
-    text("Click to begin your mission", 280, 400);
+  	fill(0, 255, 0);
+    text("Click to begin your mission", 280, 450);
 };
 
 var CreateBullets = function(posX) {
@@ -189,9 +191,9 @@ var DrawScore = function() {
 	fill(255,255,255);
 	PFont mediumFont = loadFont("courier");
 	textFont(mediumFont, 16);
-    text("Score: " + player.score, 550, 30);
-    text("Number of Lives: ", 50, 30);
-    
+	fill(0,255,255);
+	text("Number of Lives: ", 50, 30);
+	text("Score: " + player.score, 550, 30);
     var spacing = 30;
     for(var i = player.lives; i > 0; i--) {
     	image(lifeIcon, 190 + spacing, 13);
