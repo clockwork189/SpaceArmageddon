@@ -3,10 +3,10 @@ var GameIsRunning = false;
 var GameIsOver = false;
 
 // Creating game obstacles
-var obstacles;
-var bullets;
-bullets = [];
-obstacles = [];
+var obstacles = [];
+var bullets = [];
+var explosions = [];
+var obstacleColors = [];
 
 // Setting the height and width of the canvas element
 var stageWidth = 800;
@@ -25,7 +25,18 @@ var obstacleGenerationProperties = {
 	numberSpawned_max: 5
 };
 
-var obstacleImage = loadImage("images/blueEnemy.png");
+var blueEnemy = loadImage("images/blueEnemy.png");
+var orangeEnemy = loadImage("images/orangeEnemy.png");
+var redEnemy = loadImage("images/redEnemy.png");
+var pinkEnemy = loadImage("images/pinkEnemy.png");
+var greenEnemy = loadImage("images/greenEnemy.png");
+
+obstacleColors.push(blueEnemy);
+obstacleColors.push(orangeEnemy);
+obstacleColors.push(redEnemy);
+obstacleColors.push(pinkEnemy);
+obstacleColors.push(greenEnemy);
+
 var shipImage = loadImage("images/mainShip.png");
 var titleImage = loadImage("images/TitleImage.png");
 var gameOverImage = loadImage("images/GameOver.png");
@@ -64,6 +75,7 @@ void draw() {
 		DrawScore();
 		UpdateScore();
 		UpdateObstacleSpawnCharateristics();
+		DrawExplosion();
 	} else {
 		if(GameIsOver === false) { 
 			DrawOpeningScreen();
@@ -102,7 +114,8 @@ var CreateObstacles = function() {
 	obstacle.y = 40;
 	obstacle.ySpeed = 0.1 + random(obstacleGenerationProperties.ySpeedAddition_min, obstacleGenerationProperties.ySpeedAddition_max);
 	obstacle.health = 1;
-	obstacle.image = obstacleImage;
+	var randomColor = random(0, obstacleColors.length);
+	obstacle.image = obstacleColors[parseInt(randomColor)];
 	return obstacle;
 };
 
@@ -119,7 +132,8 @@ var UpdateObstacles = function() {
 		}
 
 		if(obstacle.y >= stageHeight - 80) {
-			obstacles.splice(i,1);
+			CreateExplosionAnimation(obstacle.x, obstacle.y);
+			obstacles.splice(i,1);			
 			player.lives -= 1;
 
 			if(player.lives <= 0) {
@@ -209,13 +223,42 @@ var UpdateScore = function() {
 			var obstacle = obstacles[n];
 			if(bullet.x >= obstacle.x && bullet.x <= obstacle.x + 30 && bullet.y >= obstacle.y &&  bullet.y <= obstacle.y + 30) {
 				obstacle.health -= bullet.damage;
+				
+				CreateExplosionAnimation(bullet.x, bullet.y);
 				bullets.splice(i,1);
 			}
 		}	
 	}
 };
 
+var CreateExplosionAnimation = function(xCoord, yCoord) {
+	var explosion = [];
+	explosion.radius = 30;
+	explosion.duration = 5;
+	explosion.x = xCoord ;
+	explosion.y = yCoord - 10;
+
+	explosions.push(explosion);
+};
+
+var DrawExplosion = function() {
+	for(var i = explosions.length - 1; i >= 0; i -= 1) {
+		var explosion = explosions[i];
+
+		explosion.radius = explosion.radius - explosion.duration;
+		
+		fill(237, 134, 70, 255 - explosion.duration * 20);
+		
+		if(explosion.radius <= 0) {
+			explosions.splice(i, 1);
+		}
+
+		ellipse(explosion.x, explosion.y, explosion.radius, explosion.radius);
+	}
+}
+
 var UpdateObstacleSpawnCharateristics = function() {
+	// TODO: Replace this with an algorithm
 	if(player.score > 25 && player.score < 50) {
 		obstacleGenerationProperties.ySpeedAddition_min = 0.3;
 		obstacleGenerationProperties.ySpeedAddition_max = 0.6;
