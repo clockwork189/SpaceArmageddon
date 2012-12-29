@@ -6,7 +6,7 @@ var GameIsOver = false;
 var obstacles = [];
 var bullets = [];
 var explosions = [];
-var obstacleColors = [];
+
 
 // Setting the height and width of the canvas element
 var stageWidth = 800;
@@ -17,12 +17,16 @@ var lastObstacleCreation = 0;
 // Default number of player lives
 var NUM_LIVES = 3;
 
-var obstacleGenerationProperties = {
+var obstacleProperties = {
 	timeToSpawn: 200,
-	ySpeedAddition_min: 0.1,
-	ySpeedAddition_max: 0.5,
-	numberSpawned_min: 3,
-	numberSpawned_max: 5
+	DefaultMinYSpeedAddition: 0.1,
+	DefaultMaxYSpeedAddition: 0.5,
+	DefaultMinNumberSpawned: 3,
+	DefaultMaxNumberSpawned: 5,
+	MinYSpeedAddition: 0.1,
+	MaxYSpeedAddition: 0.5,
+	MinNumberSpawned: 3,
+	MaxNumberSpawned: 5
 };
 
 var blueEnemy = loadImage("images/blueEnemy.png");
@@ -31,11 +35,7 @@ var redEnemy = loadImage("images/redEnemy.png");
 var pinkEnemy = loadImage("images/pinkEnemy.png");
 var greenEnemy = loadImage("images/greenEnemy.png");
 
-obstacleColors.push(blueEnemy);
-obstacleColors.push(orangeEnemy);
-obstacleColors.push(redEnemy);
-obstacleColors.push(pinkEnemy);
-obstacleColors.push(greenEnemy);
+var obstacleColors = [blueEnemy, orangeEnemy, redEnemy, pinkEnemy, greenEnemy];
 
 var shipImage = loadImage("images/mainShip.png");
 var titleImage = loadImage("images/TitleImage.png");
@@ -97,32 +97,30 @@ void mousePressed() {
 }
 
 var GenerateAllObstacles = function() {
-    if (frameCount - lastObstacleCreation < obstacleGenerationProperties.timeToSpawn) {
+    if (frameCount - lastObstacleCreation < obstacleProperties.timeToSpawn) {
         return;
     }
 
-	var numObstacles = random(obstacleGenerationProperties.numberSpawned_min, obstacleGenerationProperties.numberSpawned_max);
+	var numObstacles = random(obstacleProperties.MinNumberSpawned, obstacleProperties.MaxNumberSpawned);
 	for(var i = 0; i < numObstacles; i++) {
-		obstacles.push(CreateObstacles());
+		var obstacle = new Obstacle();
+		obstacles.push(obstacle);
 	}
 	lastObstacleCreation = frameCount;
 };
 
-var CreateObstacles = function() {
-	var obstacle = [];
-	obstacle.x = random(50, stageWidth - 50);
-	obstacle.y = 40;
-	obstacle.ySpeed = 0.1 + random(obstacleGenerationProperties.ySpeedAddition_min, obstacleGenerationProperties.ySpeedAddition_max);
-	obstacle.health = 1;
-	var randomColor = random(0, obstacleColors.length);
-	obstacle.image = obstacleColors[parseInt(randomColor)];
-	return obstacle;
-};
+var Obstacle = function() {
+	this.x = random(50, stageWidth - 50);
+	this.y = 40;
+	this.ySpeed = 0.1 + random(obstacleProperties.MinYSpeedAddition, obstacleProperties.MaxYSpeedAddition);
+	this.health = 1;
+	this.image = obstacleColors[parseInt(random(0, obstacleColors.length))];
+}
 
 var UpdateObstacles = function() {
 	for(var i = 0; i < obstacles.length; i++) {
 		var obstacle = obstacles[i];
-		//rect(obstacle.x, obstacle.y, 30, 30);
+
 		image(obstacle.image, obstacle.x, obstacle.y);
 		obstacle.y += obstacle.ySpeed;
 
@@ -144,6 +142,15 @@ var UpdateObstacles = function() {
 	}
 };
 
+var UpdateObstacleSpawnCharateristics = function() {
+	obstacleProperties.MinYSpeedAddition = obstacleProperties.DefaultMinYSpeedAddition + (player.score/25) * 0.1;
+	obstacleProperties.MaxYSpeedAddition =  obstacleProperties.DefaultMaxYSpeedAddition + (player.score/25) * 0.1;
+	obstacleProperties.MinNumberSpawned =  parseInt(floor(obstacleProperties.DefaultMinNumberSpawned + player.score/25));
+	obstacleProperties.MaxNumberSpawned =  parseInt(floor(obstacleProperties.DefaultMaxNumberSpawned + player.score/25));
+
+};
+
+
 var DrawOpeningScreen = function() {
 	fill(255,255,255);
 	
@@ -163,6 +170,14 @@ var DrawOpeningScreen = function() {
     text("Click to begin your mission", 280, 450);
 };
 
+// Creating a bullet Object
+var Bullet = function(xPosition) {
+	this.x = xPosition;
+	this.y = stageHeight - 50;
+	this.ySpeed = 5;
+	this.damage = 1;
+};
+
 var CreateBullets = function(posX) {
 	// Only fire on command
     if (!mousePressed && !keyPressed) {
@@ -174,16 +189,12 @@ var CreateBullets = function(posX) {
         return;
     }
 
-	var bullet = [];
-	bullet.x = posX;
-	bullet.y = stageHeight - 50;
-	bullet.ySpeed = 5;
-	bullet.damage = 1;
-
+	var bullet = new Bullet(posX);
 	bullets.push(bullet);
 
 	player.lastFired = frameCount;
 };
+
 
 var UpdateBullets = function() {
 	for(var i = 0; i < bullets.length; i++) {
@@ -231,13 +242,15 @@ var UpdateScore = function() {
 	}
 };
 
-var CreateExplosionAnimation = function(xCoord, yCoord) {
-	var explosion = [];
-	explosion.radius = 30;
-	explosion.duration = 5;
-	explosion.x = xCoord ;
-	explosion.y = yCoord - 10;
+var Explosion = function(xCoordinate, yCoordinate) {
+	this.radius = 30;
+	this.duration = 5;
+	this.x = xCoordinate ;
+	this.y = yCoordinate - 10;
+};
 
+var CreateExplosionAnimation = function(xCoord, yCoord) {
+	var explosion = new Explosion(xCoord, yCoord);
 	explosions.push(explosion);
 };
 
@@ -256,46 +269,6 @@ var DrawExplosion = function() {
 		ellipse(explosion.x, explosion.y, explosion.radius, explosion.radius);
 	}
 }
-
-var UpdateObstacleSpawnCharateristics = function() {
-	// TODO: Replace this with an algorithm
-	if(player.score > 25 && player.score < 50) {
-		obstacleGenerationProperties.ySpeedAddition_min = 0.3;
-		obstacleGenerationProperties.ySpeedAddition_max = 0.6;
-		obstacleGenerationProperties.numberSpawned_min = 5;
-		obstacleGenerationProperties.numberSpawned_max = 6;
-	} else if(player.score > 50 && player.score < 75) {
-		obstacleGenerationProperties.ySpeedAddition_min = 0.3;
-		obstacleGenerationProperties.ySpeedAddition_max = 0.7;
-		obstacleGenerationProperties.numberSpawned_min = 5;
-		obstacleGenerationProperties.numberSpawned_max = 7;
-	} else if(player.score > 75 && player.score < 100) {
-		obstacleGenerationProperties.ySpeedAddition_min = 0.4;
-		obstacleGenerationProperties.ySpeedAddition_max = 0.8;
-		obstacleGenerationProperties.numberSpawned_min = 5;
-		obstacleGenerationProperties.numberSpawned_max = 8;
-	} else if(player.score > 100 && player.score < 125) {
-		obstacleGenerationProperties.ySpeedAddition_min = 0.5;
-		obstacleGenerationProperties.ySpeedAddition_max = 0.9;
-		obstacleGenerationProperties.numberSpawned_min = 7;
-		obstacleGenerationProperties.numberSpawned_max = 9;
-	}   else if(player.score > 125 && player.score < 150) {
-		obstacleGenerationProperties.ySpeedAddition_min = 0.8;
-		obstacleGenerationProperties.ySpeedAddition_max = 1.0;
-		obstacleGenerationProperties.numberSpawned_min = 8;
-		obstacleGenerationProperties.numberSpawned_max = 10;
-	} else if(player.score > 150 && player.score < 175) {
-		obstacleGenerationProperties.ySpeedAddition_min = 0.9;
-		obstacleGenerationProperties.ySpeedAddition_max = 1.5;
-		obstacleGenerationProperties.numberSpawned_min = 9;
-		obstacleGenerationProperties.numberSpawned_max = 12;
-	} else if(player.score > 200) {
-		obstacleGenerationProperties.ySpeedAddition_min = 1.0;
-		obstacleGenerationProperties.ySpeedAddition_max = 1.5;
-		obstacleGenerationProperties.numberSpawned_min = 12;
-		obstacleGenerationProperties.numberSpawned_max = 15;
-	}  
-};
 
 var DrawGameOverScreen = function() {
 	if(player.lives <= 0) {
