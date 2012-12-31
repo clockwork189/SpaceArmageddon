@@ -32,6 +32,7 @@
             }
         </style>
         <script type="text/javascript">
+            /*
             var _gaq = _gaq || [];
             _gaq.push(['_setAccount', 'UA-37225805-1']);
             _gaq.push(['_trackPageview']);
@@ -41,17 +42,12 @@
                 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
                 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
             })();
+            */
         </script>
-        <script src="js/processing-1.4.1.min.js"></script>
+        <!--<script src="js/processing-1.4.1.min.js"></script>-->
 	</head>
 	<body>
-		<canvas id="mainGameCanvas" data-processing-sources="main.pde"></canvas>
-        <!--
-        <div id="footer">
-            <a href="http://hackrdojo.com/" target="_blank">HackrDojo</a> | 
-            <a href="http://charlesdesouza.com/" target="_blank">Charles De Souza</a> | 
-            <a href="mailto:charles.desouza3000@gmail.com" target="_blank">Contact</a> 
-        </div>
-    -->
+		<canvas id="mainGameCanvas" width="800" height="600"></canvas>
+        <script src="app.js"></script>
 	</body>
 </html>
