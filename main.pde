@@ -7,7 +7,6 @@ var obstacles = [];
 var bullets = [];
 var explosions = [];
 
-
 // Setting the height and width of the canvas element
 var stageWidth = 800;
 var stageHeight = 600;
@@ -96,6 +95,14 @@ void mousePressed() {
 	}
 }
 
+var Obstacle = function() {
+	this.x = random(50, stageWidth - 50);
+	this.y = 40;
+	this.ySpeed = 0.1 + random(obstacleProperties.MinYSpeedAddition, obstacleProperties.MaxYSpeedAddition);
+	this.health = 1;
+	this.image = obstacleColors[parseInt(random(0, obstacleColors.length))];
+}
+
 var GenerateAllObstacles = function() {
     if (frameCount - lastObstacleCreation < obstacleProperties.timeToSpawn) {
         return;
@@ -109,13 +116,6 @@ var GenerateAllObstacles = function() {
 	lastObstacleCreation = frameCount;
 };
 
-var Obstacle = function() {
-	this.x = random(50, stageWidth - 50);
-	this.y = 40;
-	this.ySpeed = 0.1 + random(obstacleProperties.MinYSpeedAddition, obstacleProperties.MaxYSpeedAddition);
-	this.health = 1;
-	this.image = obstacleColors[parseInt(random(0, obstacleColors.length))];
-}
 
 var UpdateObstacles = function() {
 	for(var i = 0; i < obstacles.length; i++) {
