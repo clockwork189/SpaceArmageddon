@@ -18,7 +18,6 @@ var ImageSources = {
 	pinkEnemy: "images/pinkEnemy.png",
 	greenEnemy: "images/greenEnemy.png",
 	shipImage: "images/mainShip.png",
-	titleImage: "images/TitleImage.png",
 	gameOverImage: "images/GameOver.png",
 	lifeIcon: "images/live.png",
 	backgroundImage: "images/background.png"
@@ -129,10 +128,10 @@ canvas.addEventListener("click", function(event) {
 });
 
 var mousePressed = 0;
-canvas.onmousedown = function() { 
+document.body.onmousedown = function() { 
   ++mousePressed;
 }
-canvas.onmouseup = function() {
+document.body.onmouseup = function() {
   --mousePressed;
 }
 var obstacleColors = [
@@ -173,9 +172,8 @@ function random(min, max) {
 }
 
 var DrawBackground = function() {
-	context.rect(0, 0, stageWidth, stageHeight);
-	context.fillStyle = "#000";
-	context.fill();
+	//context.rect(0, 0, stageWidth, stageHeight);
+	context.drawImage(images.backgroundImage, 0, 0);
 };
 
 var DrawPlayer = function() {
@@ -300,20 +298,42 @@ var DrawExplosion = function() {
 	}
 }
 
+var DrawOpeningScreen = function() {
+	context.rect(0, 0, stageWidth, stageHeight);
+	context.fillStyle = "#000";
+	context.fill();
+	context.font = '56px Verdana';
+	context.fillStyle = "#00ff00";
+  	context.fillText("SPACE ARMEGEDDON", 100, 100);
+
+  	context.font = '16px courier';
+	context.fillStyle = "#ffffff";
+  	context.fillText("OH NOESSS! Our planet is under attack!", 200, 220);
+  	context.fillText("Can you protect planet earth from the alien invaders?", 140, 250);
+  	context.fillText("Move your ship with your mouse", 240, 350);
+  	context.fillText("Click or press a key to shoot", 245, 375);
+  	context.fillStyle = "#00ff00";
+  	context.fillText("Click to begin your mission", 255, 450);
+};
 
 var loop = function() {
-	DrawBackground();
-	DrawPlayer();
-	frameCount++;
-	GenerateAllObstacles();
-	UpdateObstacles();
-	UpdateObstacleSpawnCharateristics();
-	UpdateScore();
-	CreateBullets(player.xPos - 5);
-	UpdateBullets();
-	DrawExplosion();
+	if(currentGameState == gameState.NOT_STARTED) {
+		DrawOpeningScreen();
+	} else if(currentGameState == gameState.PLAYING) {
+		frameCount++;
+		DrawBackground();
+		DrawPlayer();
+		GenerateAllObstacles();
+		UpdateObstacles();
+		UpdateObstacleSpawnCharateristics();
+		UpdateScore();
+		CreateBullets(player.xPos - 5);
+		UpdateBullets();
+		DrawExplosion();
+	} 
 	requestAnimationFrame(loop);
 };
+
 if(LoadImages(ImageSources)) {
 	loop();
 }
