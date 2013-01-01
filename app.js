@@ -261,6 +261,19 @@ var UpdateObstacleSpawnCharateristics = function() {
 
 };
 
+var DrawScore = function() {
+	context.font = '16px courier';
+	context.fillStyle = "#00ffff";
+  	context.fillText("Number of Lives: ", 50, 30);
+	context.fillText("Score: " + player.score, 550, 30);
+    
+    var spacing = 30;
+    for(var i = player.lives; i > 0; i--) {
+    	context.drawImage(images.lifeIcon, 190 + spacing, 13);
+    	spacing += 30;
+    }
+};
+
 var UpdateScore = function() {
 	for(var i = bullets.length - 1; i >= 0; i -= 1) {
 		var bullet = bullets[i];
@@ -326,6 +339,7 @@ var loop = function() {
 		GenerateAllObstacles();
 		UpdateObstacles();
 		UpdateObstacleSpawnCharateristics();
+		DrawScore();
 		UpdateScore();
 		CreateBullets(player.xPos - 5);
 		UpdateBullets();
