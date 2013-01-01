@@ -116,17 +116,6 @@ canvas.addEventListener("mousemove", function(event) {
 	mouseY = mousePos.y;
 });	
 
-
-canvas.addEventListener("click", function(event) {
-	if(currentGameState == gameState.NOT_STARTED) {
-		currentGameState = gameState.PLAYING;
-		player.lives = NUM_LIVES;
-		player.score = 0;
-		obstacles = [];
-		bullets = [];
-	}
-});
-
 var mousePressed = 0;
 document.body.onmousedown = function() { 
   ++mousePressed;
@@ -315,6 +304,7 @@ var DrawOpeningScreen = function() {
 	context.rect(0, 0, stageWidth, stageHeight);
 	context.fillStyle = "#000";
 	context.fill();
+
 	context.font = '56px Verdana';
 	context.fillStyle = "#00ff00";
   	context.fillText("SPACE ARMEGEDDON", 100, 100);
@@ -329,7 +319,47 @@ var DrawOpeningScreen = function() {
   	context.fillText("Click to begin your mission", 255, 450);
 };
 
+var DrawGameOverScreen = function() {
+	context.rect(0, 0, stageWidth, stageHeight);
+	context.fillStyle = "#000";
+	context.fill();
+
+	context.font = '56px Verdana';
+	context.fillStyle = "#00ff00";
+  	context.fillText("GAME OVER", 240, 150);
+
+	context.font = '28px calibri';
+	context.fillStyle = "#ffffff";
+    context.fillText("Final Score: " + player.score, 330, 280);
+
+    context.font = '14px courier';
+    context.fillText("Click to start a new game", 310, 380);;
+};
+
+var CheckGameState = function() {
+	if(mousePressed) {
+		if(currentGameState == gameState.NOT_STARTED) {
+			currentGameState = gameState.PLAYING;
+			player.lives = NUM_LIVES;
+			player.score = 0;
+			obstacles = [];
+			bullets = [];
+		} else if(currentGameState == gameState.GAME_OVER) {
+			currentGameState = gameState.PLAYING;
+			player.lives = NUM_LIVES;
+			player.score = 0;
+			obstacles = [];
+			bullets = [];
+		}
+	}
+
+	if(player.lives <= 0) {
+		currentGameState = gameState.GAME_OVER;	
+	}
+};
+
 var loop = function() {
+	CheckGameState();
 	if(currentGameState == gameState.NOT_STARTED) {
 		DrawOpeningScreen();
 	} else if(currentGameState == gameState.PLAYING) {
@@ -344,7 +374,9 @@ var loop = function() {
 		CreateBullets(player.xPos - 5);
 		UpdateBullets();
 		DrawExplosion();
-	} 
+	} else if(currentGameState == gameState.GAME_OVER) {
+		DrawGameOverScreen();
+	}
 	requestAnimationFrame(loop);
 };
 
